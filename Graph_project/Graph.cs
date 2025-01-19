@@ -69,8 +69,12 @@ namespace Graph_project
             public Vertex(Point point)
             {
                 this.location = point;
-                this.description = Convert.ToChar(Convert.ToInt16('A') + count).ToString();
+                this.description =count.ToString();
                 count++;
+            }
+            public static void ResetCounter()
+            {
+                count = 0;
             }
         }
         public class Edge
@@ -84,6 +88,13 @@ namespace Graph_project
                 this.from = from;
                 this.to = to;
             }
+        }
+
+        public void Clear()
+        {
+            Vertices.Clear();
+            Edges.Clear();
+            Vertex.ResetCounter();
         }
     }
 }

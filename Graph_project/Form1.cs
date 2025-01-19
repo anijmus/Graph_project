@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GraphProject;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
@@ -9,7 +10,7 @@ namespace Graph_project
     public partial class Form1 : Form
     {
         private readonly Graphics graphics;
-        private const int radius = 15;
+        private const int radius = 20;
         private readonly Pen PenVertex;
         private readonly Pen PenVertexSelected;
         private readonly Pen PenEdge;
@@ -19,6 +20,10 @@ namespace Graph_project
 
         private Graph.Vertex vertexFrom;
         private Graph.Vertex vertexTo;
+
+        private List<Graph.Vertex> algorithmPath;
+        private int currentStep;
+        private Timer animationTimer;
 
         public Form1()
         {
@@ -33,14 +38,18 @@ namespace Graph_project
                                                       pictureBoxVisualization.Height);
 
             graphics = Graphics.FromImage(pictureBoxVisualization.Image);
-            PenVertex = new Pen(Color.Black, 3);
+            PenVertex = new Pen(Color.Black, 4);
             PenVertexSelected = new Pen(Color.Red, 5);
-            PenEdge = new Pen(Color.Blue, 3)
+            PenEdge = new Pen(Color.Gold, 3)
             {
                 EndCap = System.Drawing.Drawing2D.LineCap.ArrowAnchor
             };
 
             BrushVertexDescription = new SolidBrush(Color.Black);
+
+            animationTimer = new Timer();
+            animationTimer.Interval = 500; // Интервал обновления анимации
+            animationTimer.Tick += AnimationTimer_Tick;
 
             DrawGraph();
         }
@@ -53,7 +62,7 @@ namespace Graph_project
             {
                 graphics.DrawEllipse(PenVertex, v.Location.X - radius, v.Location.Y - radius, 2 * radius, 2 * radius);
                 graphics.DrawString(v.Description, new Font("Arial", radius, FontStyle.Bold), BrushVertexDescription,
-                    v.Location.X - radius / 2, v.Location.Y - radius / 2);
+                    v.Location.X - 2*radius , v.Location.Y - 2 * radius);
             }
 
             foreach (Graph.Edge e in myGraph.Edges)
@@ -64,6 +73,10 @@ namespace Graph_project
             if (vertexFrom != null)
             {
                 graphics.DrawEllipse(PenVertexSelected, vertexFrom.Location.X - radius, vertexFrom.Location.Y - radius, 2 * radius, 2 * radius);
+            }
+            if (vertexTo != null)
+            {
+                graphics.DrawEllipse(PenVertexSelected, vertexTo.Location.X - radius, vertexTo.Location.Y - radius, 2 * radius, 2 * radius);
             }
 
             pictureBoxVisualization.Refresh();
@@ -78,7 +91,7 @@ namespace Graph_project
             dx /= length;
             dy /= length;
 
-            float arrowSize = 12; // Zwiększono rozmiar strzałki
+            float arrowSize = 12; 
 
             PointF arrowPoint1 = new PointF(
                 to.X - arrowSize * (dx - dy),
@@ -96,9 +109,9 @@ namespace Graph_project
 
         private void pictureBoxVisualization_MouseDown(object sender, MouseEventArgs e)
         {
-            if (radioButtonVertex.Checked)
+            if (e.Button == MouseButtons.Left && radioButtonVertex.Checked)
             {
-                if (!myGraph.IsVertex(e.Location, radius * 2))
+                if (!myGraph.IsVertex(e.Location, radius * 4))
                 {
                     myGraph.AddVertex(new Vertex(e.Location));
                     DrawGraph();
@@ -108,13 +121,34 @@ namespace Graph_project
                     MessageBox.Show("Nie można wstawić wierzchołka tak blisko innego!");
                 }
             }
-            else if (radioButtonEdge.Checked)
+            else if (e.Button == MouseButtons.Left && radioButtonEdge.Checked)
             {
-                vertexFrom = myGraph.GetVertex(e.Location, radius * 2); // Zwiększona tolerancja
+                vertexFrom = myGraph.GetVertex(e.Location, radius); 
                 if (vertexFrom != null)
                 {
                     currentMousePosition = e.Location;
                 }
+            }
+            else if (e.Button == MouseButtons.Right) // Выбор начальной/конечной вершины
+            {
+                var selectedVertex = myGraph.GetVertex(e.Location, radius);
+                if (selectedVertex != null)
+                {
+                    if (vertexFrom == null)
+                    {
+                        vertexFrom = selectedVertex;
+                    }
+                    else if (vertexTo == null)
+                    {
+                        vertexTo = selectedVertex;
+                    }
+                    else
+                    {
+                        vertexFrom = selectedVertex;
+                        vertexTo = null;
+                    }
+                }
+                DrawGraph();
             }
         }
 
@@ -131,7 +165,7 @@ namespace Graph_project
         {
             if (radioButtonEdge.Checked && vertexFrom != null)
             {
-                vertexTo = myGraph.GetVertex(e.Location, radius * 2); // Zwiększona tolerancja
+                vertexTo = myGraph.GetVertex(e.Location, radius);
 
                 if (vertexTo != null && vertexFrom != vertexTo)
                 {
@@ -160,6 +194,86 @@ namespace Graph_project
                     g.DrawLine(tempPen, adjustedFrom, currentMousePosition.Value);
                 }
             }
+        }
+        private void AnimationTimer_Tick(object sender, EventArgs e)
+        {
+            if (algorithmPath != null && currentStep < algorithmPath.Count)
+            {
+                var currentVertex = algorithmPath[currentStep];
+                graphics.FillEllipse(new SolidBrush(Color.BlueViolet), currentVertex.Location.X - radius, currentVertex.Location.Y - radius, 2 * radius, 2 * radius);
+                pictureBoxVisualization.Refresh();
+                currentStep++;
+            }
+            else
+            {
+                animationTimer.Stop();
+                algorithmPath = null; // Сброс пути после завершения
+                MessageBox.Show("Algorithm visualization completed.");
+            }
+        }
+
+        private void StartAnimation()
+        {
+            if (algorithmPath == null || algorithmPath.Count == 0)
+            {
+                MessageBox.Show("No path found or invalid graph structure.");
+                return;
+            }
+
+            currentStep = 0;
+            animationTimer.Start();
+        }
+
+        private void buttonAStar_Click(object sender, EventArgs e)
+        {
+            if (vertexFrom == null || vertexTo == null)
+            {
+                MessageBox.Show("Please select both a start and an end vertex (right-click).");
+                return;
+            }
+
+            var aStar = new AStarAlgorithm(myGraph);
+            algorithmPath = aStar.Execute(vertexFrom, vertexTo);
+            StartAnimation();
+        }
+
+        private void buttonBFS_Click(object sender, EventArgs e)
+        {
+            if (vertexFrom == null)
+            {
+                MessageBox.Show("Please select a starting vertex (right-click).");
+                return;
+            }
+
+            var bfs = new BreadthFirstAlgorithm(myGraph);
+            algorithmPath = bfs.Execute(vertexFrom);
+            StartAnimation();
+        }
+
+        private void buttonDFS_Click(object sender, EventArgs e)
+        {
+            if (vertexFrom == null)
+            {
+                MessageBox.Show("Please select a starting vertex (right-click).");
+                return;
+            }
+
+            var dfs = new DepthFirstAlgorithm(myGraph);
+            algorithmPath = dfs.Execute(vertexFrom);
+            StartAnimation();
+        }
+
+        private void buttonClear_Click(object sender, EventArgs e)
+        {
+            myGraph.Clear();
+            vertexFrom = null;
+            vertexTo = null;
+            algorithmPath = null;
+            currentStep = 0;
+
+            // Очищаем экран
+            graphics.Clear(Color.White);
+            pictureBoxVisualization.Refresh();
         }
     }
 }

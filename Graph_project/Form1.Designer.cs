@@ -30,12 +30,13 @@
         {
             this.pictureBoxVisualization = new System.Windows.Forms.PictureBox();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.buttonAStar = new System.Windows.Forms.Button();
+            this.buttonBFS = new System.Windows.Forms.Button();
+            this.buttonDFS = new System.Windows.Forms.Button();
             this.groupBoxAdd = new System.Windows.Forms.GroupBox();
-            this.radioButtonVertex = new System.Windows.Forms.RadioButton();
             this.radioButtonEdge = new System.Windows.Forms.RadioButton();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
+            this.radioButtonVertex = new System.Windows.Forms.RadioButton();
+            this.buttonClear = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxVisualization)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -48,8 +49,9 @@
             // 
             this.pictureBoxVisualization.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBoxVisualization.Location = new System.Drawing.Point(0, 0);
+            this.pictureBoxVisualization.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBoxVisualization.Name = "pictureBoxVisualization";
-            this.pictureBoxVisualization.Size = new System.Drawing.Size(1251, 953);
+            this.pictureBoxVisualization.Size = new System.Drawing.Size(906, 774);
             this.pictureBoxVisualization.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxVisualization.TabIndex = 0;
             this.pictureBoxVisualization.TabStop = false;
@@ -62,88 +64,113 @@
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
             this.splitContainer1.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer1.Margin = new System.Windows.Forms.Padding(2);
             this.splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
             // 
-            this.splitContainer1.Panel1.Controls.Add(this.button3);
-            this.splitContainer1.Panel1.Controls.Add(this.button2);
-            this.splitContainer1.Panel1.Controls.Add(this.button1);
+            this.splitContainer1.Panel1.Controls.Add(this.buttonClear);
+            this.splitContainer1.Panel1.Controls.Add(this.buttonAStar);
+            this.splitContainer1.Panel1.Controls.Add(this.buttonBFS);
+            this.splitContainer1.Panel1.Controls.Add(this.buttonDFS);
             this.splitContainer1.Panel1.Controls.Add(this.groupBoxAdd);
             // 
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.pictureBoxVisualization);
-            this.splitContainer1.Size = new System.Drawing.Size(1382, 953);
+            this.splitContainer1.Size = new System.Drawing.Size(1036, 774);
             this.splitContainer1.SplitterDistance = 127;
+            this.splitContainer1.SplitterWidth = 3;
             this.splitContainer1.TabIndex = 1;
+            // 
+            // buttonAStar
+            // 
+            this.buttonAStar.Location = new System.Drawing.Point(2, 467);
+            this.buttonAStar.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonAStar.Name = "buttonAStar";
+            this.buttonAStar.Size = new System.Drawing.Size(118, 50);
+            this.buttonAStar.TabIndex = 3;
+            this.buttonAStar.Text = "A Star";
+            this.buttonAStar.UseVisualStyleBackColor = true;
+            this.buttonAStar.Click += new System.EventHandler(this.buttonAStar_Click);
+            // 
+            // buttonBFS
+            // 
+            this.buttonBFS.Location = new System.Drawing.Point(2, 413);
+            this.buttonBFS.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonBFS.Name = "buttonBFS";
+            this.buttonBFS.Size = new System.Drawing.Size(118, 50);
+            this.buttonBFS.TabIndex = 2;
+            this.buttonBFS.Text = "BFS";
+            this.buttonBFS.UseVisualStyleBackColor = true;
+            this.buttonBFS.Click += new System.EventHandler(this.buttonBFS_Click);
+            // 
+            // buttonDFS
+            // 
+            this.buttonDFS.Location = new System.Drawing.Point(2, 358);
+            this.buttonDFS.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonDFS.Name = "buttonDFS";
+            this.buttonDFS.Size = new System.Drawing.Size(118, 50);
+            this.buttonDFS.TabIndex = 1;
+            this.buttonDFS.Text = "DFS";
+            this.buttonDFS.UseVisualStyleBackColor = true;
+            this.buttonDFS.Click += new System.EventHandler(this.buttonDFS_Click);
             // 
             // groupBoxAdd
             // 
             this.groupBoxAdd.Controls.Add(this.radioButtonEdge);
             this.groupBoxAdd.Controls.Add(this.radioButtonVertex);
-            this.groupBoxAdd.Location = new System.Drawing.Point(6, 136);
+            this.groupBoxAdd.Location = new System.Drawing.Point(4, 110);
+            this.groupBoxAdd.Margin = new System.Windows.Forms.Padding(2);
             this.groupBoxAdd.Name = "groupBoxAdd";
-            this.groupBoxAdd.Size = new System.Drawing.Size(157, 75);
+            this.groupBoxAdd.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBoxAdd.Size = new System.Drawing.Size(118, 61);
             this.groupBoxAdd.TabIndex = 0;
             this.groupBoxAdd.TabStop = false;
             this.groupBoxAdd.Text = "Add";
             // 
-            // radioButtonVertex
-            // 
-            this.radioButtonVertex.AutoSize = true;
-            this.radioButtonVertex.Location = new System.Drawing.Point(4, 22);
-            this.radioButtonVertex.Name = "radioButtonVertex";
-            this.radioButtonVertex.Size = new System.Drawing.Size(66, 20);
-            this.radioButtonVertex.TabIndex = 0;
-            this.radioButtonVertex.TabStop = true;
-            this.radioButtonVertex.Text = "Vertex";
-            this.radioButtonVertex.UseVisualStyleBackColor = true;
-            // 
             // radioButtonEdge
             // 
             this.radioButtonEdge.AutoSize = true;
-            this.radioButtonEdge.Location = new System.Drawing.Point(4, 49);
+            this.radioButtonEdge.Location = new System.Drawing.Point(3, 40);
+            this.radioButtonEdge.Margin = new System.Windows.Forms.Padding(2);
             this.radioButtonEdge.Name = "radioButtonEdge";
-            this.radioButtonEdge.Size = new System.Drawing.Size(61, 20);
+            this.radioButtonEdge.Size = new System.Drawing.Size(50, 17);
             this.radioButtonEdge.TabIndex = 1;
             this.radioButtonEdge.TabStop = true;
             this.radioButtonEdge.Text = "Edge";
             this.radioButtonEdge.UseVisualStyleBackColor = true;
             // 
-            // button1
+            // radioButtonVertex
             // 
-            this.button1.Location = new System.Drawing.Point(6, 303);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(157, 61);
-            this.button1.TabIndex = 1;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
+            this.radioButtonVertex.AutoSize = true;
+            this.radioButtonVertex.Location = new System.Drawing.Point(3, 18);
+            this.radioButtonVertex.Margin = new System.Windows.Forms.Padding(2);
+            this.radioButtonVertex.Name = "radioButtonVertex";
+            this.radioButtonVertex.Size = new System.Drawing.Size(55, 17);
+            this.radioButtonVertex.TabIndex = 0;
+            this.radioButtonVertex.TabStop = true;
+            this.radioButtonVertex.Text = "Vertex";
+            this.radioButtonVertex.UseVisualStyleBackColor = true;
             // 
-            // button2
+            // buttonClear
             // 
-            this.button2.Location = new System.Drawing.Point(6, 370);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(157, 61);
-            this.button2.TabIndex = 2;
-            this.button2.Text = "button2";
-            this.button2.UseVisualStyleBackColor = true;
-            // 
-            // button3
-            // 
-            this.button3.Location = new System.Drawing.Point(6, 437);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(157, 61);
-            this.button3.TabIndex = 3;
-            this.button3.Text = "button3";
-            this.button3.UseVisualStyleBackColor = true;
+            this.buttonClear.Location = new System.Drawing.Point(2, 192);
+            this.buttonClear.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonClear.Name = "buttonClear";
+            this.buttonClear.Size = new System.Drawing.Size(118, 36);
+            this.buttonClear.TabIndex = 4;
+            this.buttonClear.Text = "Clear";
+            this.buttonClear.UseVisualStyleBackColor = true;
+            this.buttonClear.Click += new System.EventHandler(this.buttonClear_Click);
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1382, 953);
+            this.ClientSize = new System.Drawing.Size(1036, 774);
             this.Controls.Add(this.splitContainer1);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.MaximizeBox = false;
             this.Name = "Form1";
             this.Text = "Form1";
@@ -162,12 +189,13 @@
 
         private System.Windows.Forms.PictureBox pictureBoxVisualization;
         private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button buttonAStar;
+        private System.Windows.Forms.Button buttonBFS;
+        private System.Windows.Forms.Button buttonDFS;
         private System.Windows.Forms.GroupBox groupBoxAdd;
         private System.Windows.Forms.RadioButton radioButtonEdge;
         private System.Windows.Forms.RadioButton radioButtonVertex;
+        private System.Windows.Forms.Button buttonClear;
     }
 }
 
