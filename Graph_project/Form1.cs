@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using static Graph_project.Graph;
 
@@ -39,16 +40,15 @@ namespace Graph_project
 
             graphics = Graphics.FromImage(pictureBoxVisualization.Image);
             PenVertex = new Pen(Color.Black, 4);
-            PenVertexSelected = new Pen(Color.Red, 5);
-            PenEdge = new Pen(Color.Gold, 3)
-            {
-                EndCap = System.Drawing.Drawing2D.LineCap.ArrowAnchor
-            };
+            PenVertexSelected = new Pen(Color.DeepPink, 5);
+            AdjustableArrowCap myArrow = new AdjustableArrowCap(6, 3);
+            PenEdge = new Pen(Color.Gold, 3);
+            PenEdge.CustomEndCap = myArrow;
 
             BrushVertexDescription = new SolidBrush(Color.Black);
 
             animationTimer = new Timer();
-            animationTimer.Interval = 500; // Интервал обновления анимации
+            animationTimer.Interval = 500;
             animationTimer.Tick += AnimationTimer_Tick;
 
             DrawGraph();
@@ -67,7 +67,7 @@ namespace Graph_project
 
             foreach (Graph.Edge e in myGraph.Edges)
             {
-                DrawArrow(e.From.Location, e.To.Location);
+                graphics.DrawLine(PenEdge, e.From.Location.X, e.From.Location.Y, e.To.Location.X, e.To.Location.Y);
             }
 
             if (vertexFrom != null)
@@ -80,29 +80,6 @@ namespace Graph_project
             }
 
             pictureBoxVisualization.Refresh();
-        }
-
-        private void DrawArrow(Point from, Point to)
-        {
-            float dx = to.X - from.X;
-            float dy = to.Y - from.Y;
-            float length = (float)Math.Sqrt(dx * dx + dy * dy);
-
-            dx /= length;
-            dy /= length;
-
-            float arrowSize = 12; 
-
-            PointF arrowPoint1 = new PointF(
-                to.X - arrowSize * (dx - dy),
-                to.Y - arrowSize * (dy + dx));
-
-            PointF arrowPoint2 = new PointF(
-                to.X - arrowSize * (dx + dy),
-                to.Y - arrowSize * (dy - dx));
-
-            graphics.DrawLine(PenEdge, from, to);
-            graphics.FillPolygon(new SolidBrush(PenEdge.Color), new PointF[] { to, arrowPoint1, arrowPoint2 });
         }
 
         private Point? currentMousePosition = null;
@@ -118,7 +95,7 @@ namespace Graph_project
                 }
                 else
                 {
-                    MessageBox.Show("Nie można wstawić wierzchołka tak blisko innego!");
+                    MessageBox.Show("You can't insert a vertex so close to another!");
                 }
             }
             else if (e.Button == MouseButtons.Left && radioButtonEdge.Checked)
@@ -129,7 +106,7 @@ namespace Graph_project
                     currentMousePosition = e.Location;
                 }
             }
-            else if (e.Button == MouseButtons.Right) // Выбор начальной/конечной вершины
+            else if (e.Button == MouseButtons.Right) 
             {
                 var selectedVertex = myGraph.GetVertex(e.Location, radius);
                 if (selectedVertex != null)
@@ -199,7 +176,7 @@ namespace Graph_project
         {
             if (algorithmPath != null && currentStep < algorithmPath.Count)
             {
-                var currentVertex = algorithmPath[currentStep];
+                Graph.Vertex currentVertex = algorithmPath[currentStep];
                 graphics.FillEllipse(new SolidBrush(Color.BlueViolet), currentVertex.Location.X - radius, currentVertex.Location.Y - radius, 2 * radius, 2 * radius);
                 pictureBoxVisualization.Refresh();
                 currentStep++;
@@ -207,7 +184,7 @@ namespace Graph_project
             else
             {
                 animationTimer.Stop();
-                algorithmPath = null; // Сброс пути после завершения
+                algorithmPath = null; 
                 MessageBox.Show("Algorithm visualization completed.");
             }
         }
@@ -228,11 +205,11 @@ namespace Graph_project
         {
             if (vertexFrom == null || vertexTo == null)
             {
-                MessageBox.Show("Please select both a start and an end vertex (right-click).");
+                MessageBox.Show("Please select both a start and an end vertex (Add Vertex mode and right-click).");
                 return;
             }
 
-            var aStar = new AStarAlgorithm(myGraph);
+            AStarAlgorithm aStar = new AStarAlgorithm(myGraph);
             algorithmPath = aStar.Execute(vertexFrom, vertexTo);
             StartAnimation();
         }
@@ -241,11 +218,11 @@ namespace Graph_project
         {
             if (vertexFrom == null)
             {
-                MessageBox.Show("Please select a starting vertex (right-click).");
+                MessageBox.Show("Please select a starting vertex (Add Vertex mode and right-click).");
                 return;
             }
 
-            var bfs = new BreadthFirstAlgorithm(myGraph);
+            BreadthFirstAlgorithm bfs = new BreadthFirstAlgorithm(myGraph);
             algorithmPath = bfs.Execute(vertexFrom);
             StartAnimation();
         }
@@ -254,11 +231,11 @@ namespace Graph_project
         {
             if (vertexFrom == null)
             {
-                MessageBox.Show("Please select a starting vertex (right-click).");
+                MessageBox.Show("Please select a starting vertex (Add Vertex mode and right-click).");
                 return;
             }
 
-            var dfs = new DepthFirstAlgorithm(myGraph);
+            DepthFirstAlgorithm dfs = new DepthFirstAlgorithm(myGraph);
             algorithmPath = dfs.Execute(vertexFrom);
             StartAnimation();
         }
@@ -271,7 +248,6 @@ namespace Graph_project
             algorithmPath = null;
             currentStep = 0;
 
-            // Очищаем экран
             graphics.Clear(Color.White);
             pictureBoxVisualization.Refresh();
         }

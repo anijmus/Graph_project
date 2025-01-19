@@ -61,7 +61,7 @@ namespace Graph_project
             private readonly Point location;
             private readonly String description;
 
-            private static int count = 0;//Vertex object counter
+            private static int count = 0;
 
             public Point Location { get => location; }
             public string Description { get => description; }
