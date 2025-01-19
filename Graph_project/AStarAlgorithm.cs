@@ -19,15 +19,18 @@ namespace Graph_project
             if (goal == null)
                 throw new ArgumentNullException(nameof(goal), "Goal vertex cannot be null.");
 
+            // Zbiór otwarty przechowujący wierzchołki do przetworzenia
             List<Graph.Vertex> openSet = new List<Graph.Vertex> { start };
 
             Dictionary<Graph.Vertex, Graph.Vertex> cameFrom = new Dictionary<Graph.Vertex, Graph.Vertex>();
 
+            // G-Score: koszt dotarcia do każdego wierzchołka, początkowo nieskończoność
             var gScore = Graph.Vertices.ToDictionary(v => v, v => double.PositiveInfinity);
+            // F-Score: szacowany całkowity koszt od startu do celu
             var fScore = Graph.Vertices.ToDictionary(v => v, v => double.PositiveInfinity);
 
             gScore[start] = 0;
-            fScore[start] = HeuristicCostEstimate(start, goal);
+            fScore[start] = HeuristicCost(start, goal);
 
             while (openSet.Count > 0)
             {
@@ -46,7 +49,7 @@ namespace Graph_project
                     {
                         cameFrom[neighbor] = current;
                         gScore[neighbor] = tentativeGScore;
-                        fScore[neighbor] = gScore[neighbor] + HeuristicCostEstimate(neighbor, goal);
+                        fScore[neighbor] = gScore[neighbor] + HeuristicCost(neighbor, goal);
 
                         if (!openSet.Contains(neighbor))
                         {
@@ -69,8 +72,8 @@ namespace Graph_project
             }
             return totalPath;
         }
-
-        protected virtual double HeuristicCostEstimate(Graph.Vertex from, Graph.Vertex to)
+        //Szacuje koszt heurystyczny między dwoma wierzchołkami, czyli odleglosc
+        protected virtual double HeuristicCost(Graph.Vertex from, Graph.Vertex to)
         {
             return Distance(from, to);
         }
