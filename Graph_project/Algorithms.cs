@@ -20,9 +20,10 @@ namespace GraphProject
         protected List<Graph.Vertex> GetNeighbors(Graph.Vertex vertex)
         {
             return Graph.Edges
-                .Where(edge => edge.From == vertex)
-                .Select(edge => edge.To)
-                .ToList();
+                    .Where(edge => edge.From == vertex)
+                    .Select(edge => edge.To)
+                    .OrderBy(v => v.Description) // Sortowanie po nazwie/numerze wierzchołka
+                    .ToList();
         }
     }
 }

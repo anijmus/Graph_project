@@ -14,8 +14,8 @@ namespace Graph_project
         public override List<Graph.Vertex> Execute(Graph.Vertex start, Graph.Vertex goal = null)
         {
             HashSet<Graph.Vertex> visited = new HashSet<Graph.Vertex>();
-            List<Graph.Vertex> result = new List<Graph.Vertex>();
             Queue<Graph.Vertex> queue = new Queue<Graph.Vertex>();
+            List<Graph.Vertex> result = new List<Graph.Vertex>();
 
             queue.Enqueue(start);
 
@@ -27,7 +27,7 @@ namespace Graph_project
                     visited.Add(current);
                     result.Add(current);
 
-                    foreach (var neighbor in GetNeighbors(current))
+                    foreach (Graph.Vertex neighbor in GetNeighbors(current))
                     {
                         if (!visited.Contains(neighbor))
                         {

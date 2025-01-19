@@ -14,43 +14,49 @@ namespace Graph_project
 
         public override List<Graph.Vertex> Execute(Graph.Vertex start, Graph.Vertex goal)
         {
-            if (start == null)
-                throw new ArgumentNullException(nameof(start), "Start vertex cannot be null.");
-            if (goal == null)
-                throw new ArgumentNullException(nameof(goal), "Goal vertex cannot be null.");
+            if (start == null || goal == null)
+                throw new ArgumentNullException("Start or goal vertex cannot be null.");
 
-            // Zbiór otwarty przechowujący wierzchołki do przetworzenia
+            // Zbiór otwarty (wierzchołki do odwiedzenia)
             List<Graph.Vertex> openSet = new List<Graph.Vertex> { start };
 
+            // Śledzenie ścieżki
             Dictionary<Graph.Vertex, Graph.Vertex> cameFrom = new Dictionary<Graph.Vertex, Graph.Vertex>();
 
-            // G-Score: koszt dotarcia do każdego wierzchołka, początkowo nieskończoność
-            var gScore = Graph.Vertices.ToDictionary(v => v, v => double.PositiveInfinity);
-            // F-Score: szacowany całkowity koszt od startu do celu
-            var fScore = Graph.Vertices.ToDictionary(v => v, v => double.PositiveInfinity);
+            // Koszty dotarcia do wierzchołków
+            Dictionary<Graph.Vertex, double> gScore = new Dictionary<Graph.Vertex, double>();
+            Dictionary<Graph.Vertex, double> fScore = new Dictionary<Graph.Vertex, double>();
+
+            foreach (var vertex in Graph.Vertices)
+            {
+                gScore[vertex] = double.PositiveInfinity;
+                fScore[vertex] = double.PositiveInfinity;
+            }
 
             gScore[start] = 0;
-            fScore[start] = HeuristicCost(start, goal);
+            fScore[start] = HeuristicDistance(start, goal); // Szacowany koszt dotarcia do celu
 
             while (openSet.Count > 0)
             {
+                // Wierzchołek z najniższym fScore
                 Graph.Vertex current = openSet.OrderBy(v => fScore[v]).First();
 
-                if (current == goal)
+                if (current == goal) 
                     return ReconstructPath(cameFrom, current);
 
                 openSet.Remove(current);
 
                 foreach (Graph.Vertex neighbor in GetNeighbors(current))
                 {
-                    double tentativeGScore = gScore[current] + Distance(current, neighbor);
+                    
+                    double tentativeGScore = gScore[current] + HeuristicDistance(current, neighbor);
 
                     if (tentativeGScore < gScore[neighbor])
                     {
                         cameFrom[neighbor] = current;
                         gScore[neighbor] = tentativeGScore;
-                        fScore[neighbor] = gScore[neighbor] + HeuristicCost(neighbor, goal);
-
+                        fScore[neighbor] = gScore[neighbor] + HeuristicDistance(neighbor, goal);
+                       
                         if (!openSet.Contains(neighbor))
                         {
                             openSet.Add(neighbor);
@@ -58,27 +64,21 @@ namespace Graph_project
                     }
                 }
             }
-
-            return null; // Path not found
+            return null;
         }
-
         private List<Graph.Vertex> ReconstructPath(Dictionary<Graph.Vertex, Graph.Vertex> cameFrom, Graph.Vertex current)
         {
-            List<Graph.Vertex> totalPath = new List<Graph.Vertex> { current };
+            List<Graph.Vertex> path = new List<Graph.Vertex> { current };
             while (cameFrom.ContainsKey(current))
             {
                 current = cameFrom[current];
-                totalPath.Insert(0, current);
+                path.Insert(0, current);
             }
-            return totalPath;
-        }
-        //Szacuje koszt heurystyczny między dwoma wierzchołkami, czyli odleglosc
-        protected virtual double HeuristicCost(Graph.Vertex from, Graph.Vertex to)
-        {
-            return Distance(from, to);
+            return path;
         }
 
-        private static double Distance(Graph.Vertex v1, Graph.Vertex v2)
+        // Obliczanie odległości euklidesowej między dwoma wierzchołkami
+        private double HeuristicDistance(Graph.Vertex v1, Graph.Vertex v2)
         {
             return Math.Sqrt(Math.Pow(v1.Location.X - v2.Location.X, 2) + Math.Pow(v1.Location.Y - v2.Location.Y, 2));
         }

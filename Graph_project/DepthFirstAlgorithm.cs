@@ -14,8 +14,8 @@ namespace Graph_project
         public override List<Graph.Vertex> Execute(Graph.Vertex start, Graph.Vertex goal = null)
         {
             HashSet<Graph.Vertex> visited = new HashSet<Graph.Vertex>();
-            List<Graph.Vertex> result = new List<Graph.Vertex>();
             Stack<Graph.Vertex> stack = new Stack<Graph.Vertex>();
+            List<Graph.Vertex> result = new List<Graph.Vertex>();
 
             stack.Push(start);
 
