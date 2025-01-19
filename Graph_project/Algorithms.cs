@@ -33,7 +33,7 @@ namespace GraphProject
         public override List<Graph.Vertex> Execute(Graph.Vertex start, Graph.Vertex goal = null)
         {
             var visited = new HashSet<Graph.Vertex>();
-            var result = new List<Graph.Vertex>();
+            List<Graph.Vertex> result = new List<Graph.Vertex>();
             var stack = new Stack<Graph.Vertex>();
 
             stack.Push(start);
