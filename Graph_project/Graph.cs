@@ -41,6 +41,8 @@ namespace Graph_project
             }
             return false;
         }
+       
+
         public Vertex GetVertex(Point location, int radius)
         {
             foreach (Vertex v in vertices)
@@ -56,12 +58,21 @@ namespace Graph_project
         {
             return Math.Sqrt(Math.Pow(p1.X - p2.X, 2) + Math.Pow(p1.Y - p2.Y, 2));
         }
+
+        public void Clear()
+        {
+            Vertices.Clear();
+            Edges.Clear();
+            Vertex.ResetCounter();
+        }
+
+
         public class Vertex
         {
             private readonly Point location;
             private readonly String description;
 
-            private static int count = 0;
+            private static int count = 1;
 
             public Point Location { get => location; }
             public string Description { get => description; }
@@ -74,9 +85,11 @@ namespace Graph_project
             }
             public static void ResetCounter()
             {
-                count = 0;
+                count = 1;
             }
         }
+
+
         public class Edge
         {
             private readonly Graph.Vertex from;
@@ -88,13 +101,6 @@ namespace Graph_project
                 this.from = from;
                 this.to = to;
             }
-        }
-
-        public void Clear()
-        {
-            Vertices.Clear();
-            Edges.Clear();
-            Vertex.ResetCounter();
         }
     }
 }

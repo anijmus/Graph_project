@@ -22,7 +22,6 @@ namespace GraphProject
             return Graph.Edges
                     .Where(edge => edge.From == vertex)
                     .Select(edge => edge.To)
-                    .OrderBy(v => v.Description) // Sortowanie po nazwie/numerze wierzchołka
                     .ToList();
         }
     }

@@ -62,7 +62,7 @@ namespace Graph_project
             {
                 graphics.DrawEllipse(PenVertex, v.Location.X - radius, v.Location.Y - radius, 2 * radius, 2 * radius);
                 graphics.DrawString(v.Description, new Font("Arial", radius, FontStyle.Bold), BrushVertexDescription,
-                    v.Location.X - 2*radius , v.Location.Y - 2 * radius);
+                    v.Location.X - 5 * radius/2 , v.Location.Y - 2 * radius);
             }
 
             foreach (Graph.Edge e in myGraph.Edges)
@@ -82,7 +82,9 @@ namespace Graph_project
             pictureBoxVisualization.Refresh();
         }
 
-        private Point? currentMousePosition = null;
+
+        private Point? currentMousePosition = null; //nullable
+
 
         private void pictureBoxVisualization_MouseDown(object sender, MouseEventArgs e)
         {
@@ -108,7 +110,7 @@ namespace Graph_project
             }
             else if (e.Button == MouseButtons.Right) 
             {
-                var selectedVertex = myGraph.GetVertex(e.Location, radius);
+                Vertex selectedVertex = myGraph.GetVertex(e.Location, radius);
                 if (selectedVertex != null)
                 {
                     if (vertexFrom == null)
@@ -161,33 +163,15 @@ namespace Graph_project
 
             if (vertexFrom != null && currentMousePosition != null)
             {
-                Point adjustedFrom = new Point(
-                    vertexFrom.Location.X,
-                    vertexFrom.Location.Y);
 
                 using (Graphics g = pictureBoxVisualization.CreateGraphics())
                 {
                     Pen tempPen = new Pen(Color.Gray, 2) { DashStyle = System.Drawing.Drawing2D.DashStyle.Dash };
-                    g.DrawLine(tempPen, adjustedFrom, currentMousePosition.Value);
+                    g.DrawLine(tempPen, vertexFrom.Location.X, vertexFrom.Location.Y, currentMousePosition.Value.X, currentMousePosition.Value.Y);
                 }
             }
         }
-        private void AnimationTimer_Tick(object sender, EventArgs e)
-        {
-            if (algorithmPath != null && currentStep < algorithmPath.Count)
-            {
-                Graph.Vertex currentVertex = algorithmPath[currentStep];
-                graphics.FillEllipse(new SolidBrush(Color.BlueViolet), currentVertex.Location.X - radius, currentVertex.Location.Y - radius, 2 * radius, 2 * radius);
-                pictureBoxVisualization.Refresh();
-                currentStep++;
-            }
-            else
-            {
-                animationTimer.Stop();
-                algorithmPath = null; 
-                MessageBox.Show("Algorithm visualization completed.");
-            }
-        }
+
 
         private void StartAnimation()
         {
@@ -201,11 +185,29 @@ namespace Graph_project
             animationTimer.Start();
         }
 
+        private void AnimationTimer_Tick(object sender, EventArgs e)
+        {
+            if (algorithmPath != null && currentStep < algorithmPath.Count)
+            {
+                Vertex currentVertex = algorithmPath[currentStep];
+                graphics.FillEllipse(new SolidBrush(Color.BlueViolet), currentVertex.Location.X - radius, currentVertex.Location.Y - radius, 2 * radius, 2 * radius);
+                pictureBoxVisualization.Refresh();
+                currentStep++;
+            }
+            else
+            {
+                animationTimer.Stop();
+                algorithmPath = null;
+                MessageBox.Show( "Algorithm visualization completed.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+
         private void buttonAStar_Click(object sender, EventArgs e)
         {
             if (vertexFrom == null || vertexTo == null)
             {
-                MessageBox.Show("Please select both a start and an end vertex (Add Vertex mode and right-click).");
+                MessageBox.Show("Please select both a start and an end vertex (right-click and Add Vertex mode).", "Vertex Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -218,7 +220,7 @@ namespace Graph_project
         {
             if (vertexFrom == null)
             {
-                MessageBox.Show("Please select a starting vertex (Add Vertex mode and right-click).");
+                MessageBox.Show("Please select a starting vertex (Add Vertex mode and right-click).", "Vertex Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -231,7 +233,7 @@ namespace Graph_project
         {
             if (vertexFrom == null)
             {
-                MessageBox.Show("Please select a starting vertex (Add Vertex mode and right-click).");
+                MessageBox.Show("Please select a starting vertex (Add Vertex mode and right-click).", "Vertex Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -239,6 +241,7 @@ namespace Graph_project
             algorithmPath = dfs.Execute(vertexFrom);
             StartAnimation();
         }
+      
 
         private void buttonClear_Click(object sender, EventArgs e)
         {
